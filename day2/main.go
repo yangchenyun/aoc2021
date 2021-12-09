@@ -22,22 +22,53 @@ type move struct {
 	unit int
 }
 
-func main() {
-	h := 0
-	d := 0
-	moves := processInput("day2.txt")
+type loc struct {
+	h int
+	d int
+	aim int
+}
 
-	for _, m := range(moves) {
+func (l *loc) Move1(m move) {
 		switch {
 		case m.dir == Forward:
-			h += m.unit
+			l.h += m.unit
 		case m.dir == Down:
-			d += m.unit
+			l.d += m.unit
 		case m.dir == Up:
-			d -= m.unit
+			l.d -= m.unit
 		}
+}
+
+func (l *loc) Result() int {
+	return l.h * l.d
+}
+
+func (l *loc) Move2(m move) {
+		switch {
+		case m.dir == Forward:
+			l.h += m.unit
+			l.d += l.aim * m.unit
+		case m.dir == Down:
+			l.aim += m.unit
+		case m.dir == Up:
+			l.aim -= m.unit
+		}
+}
+
+func main() {
+	moves := processInput("day2.txt")
+
+	l := loc{}
+	for _, m := range(moves) {
+		l.Move1(m)
 	}
-	fmt.Printf("Result 1: %v\n", h * d)
+	fmt.Printf("Result 1: %v\n", l.Result())
+
+	l = loc{}
+	for _, m := range(moves) {
+		l.Move2(m)
+	}
+	fmt.Printf("Result 2: %v\n", l.Result())
 }
 
 
