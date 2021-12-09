@@ -25,7 +25,7 @@ func main() {
 			inc_count += 1
 		}
 	}
-	fmt.Printf("Part 1 Result: %v\n", inc_count)
+	fmt.Printf("Part 1 Result: %v\n", calcIncCount(numbers))
 
 	windows := make([]int, 0)
 	for i := 0; i + 2 < len(numbers); i++ {
@@ -38,5 +38,15 @@ func main() {
 			inc_count += 1
 		}
 	}
-	fmt.Printf("Part 2 Result: %v\n", inc_count)
+	fmt.Printf("Part 2 Result: %v\n", calcIncCount(windows))
+}
+
+func calcIncCount(numbers []int) int {
+	inc_count := 0
+	for i := 0; i + 1 < len(numbers); i++ {
+		if numbers[i + 1] > numbers[i]  {
+			inc_count += 1
+		}
+	}
+	return inc_count
 }
