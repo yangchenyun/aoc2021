@@ -74,14 +74,34 @@ func main() {
 	e2 := int(^r&m)
 	fmt.Printf("Result 1: %b, %b, %v\n", g2, e2, g2*e2)
 
-	fmt.Printf("Result 2: %b\n", filterOxy(numbers, leng - 1))
-	fmt.Printf("Result 2: %b\n", filterCo2(numbers, leng - 1))
-	fmt.Printf("Result 2: %v\n",
-		int(filterOxy(numbers, leng - 1))* int(filterCo2(numbers, leng - 1)))
+	oxy := filter(numbers, leng - 1, mostCommonFn)
+	co2 := filter(numbers, leng - 1, leastCommonFn)
+	fmt.Printf("Result 2: %v\n", int(oxy) * int(co2))
 
 }
 
-func filterOxy(numbers []uint16, i int) uint16{
+type keepFn func(int, int) int
+
+var mostCommonFn keepFn = func(one_c, zero_c int) int {
+	if one_c == zero_c {
+		return 1
+	} else if one_c > zero_c {
+		return 1
+	} else {
+		return 0
+	}
+}
+var leastCommonFn keepFn = func(one_c, zero_c int) int {
+	if one_c == zero_c {
+		return 0
+	} else if one_c > zero_c {
+		return 0
+	} else {
+		return 1
+	}
+}
+
+func filter(numbers []uint16, i int, fn keepFn) uint16{
 	if len(numbers) == 1 {
 		return numbers[0]
 	}
@@ -96,60 +116,13 @@ func filterOxy(numbers []uint16, i int) uint16{
 		}
 	}
 
-	var k int
-	if one_c > zero_c {
-		k = 1
-	} else if zero_c > one_c {
-		k = 0
-	} else {
-		k = 1
-	}
-
 	new_numbers := make([]uint16, 0)
 	for _, n := range(numbers) {
-		if (n>>i)&1 == uint16(k) {
+		if (n>>i)&1 == uint16(fn(one_c, zero_c)) {
 			new_numbers = append(new_numbers, n)
 		}
 	}
-	return filterOxy(new_numbers, i - 1)
-}
-
-func filterCo2(numbers []uint16, i int) uint16{
-	if len(numbers) == 0 {
-		panic("Unexpected empty numbers.")
-	}
-
-	if len(numbers) == 1 {
-		return numbers[0]
-	}
-
-	one_c := 0
-	zero_c := 0
-	for _, n := range(numbers) {
-		if (n>>i)&1 == 0b1 {
-			one_c++
-		} else {
-			zero_c++
-		}
-	}
-
-	var k int
-	if one_c > zero_c {
-		k = 0
-	} else if zero_c > one_c {
-		k = 1
-	} else {
-		k = 0
-	}
-
-	new_numbers := make([]uint16, 0)
-	for _, n := range(numbers) {
-		if (n>>i)&1 == uint16(k) {
-			// fmt.Printf("%b, %b", n, (n>>i)&1)
-			new_numbers = append(new_numbers, n)
-		}
-	}
-	return filterCo2(new_numbers, i - 1)
+	return filter(new_numbers, i - 1, fn)
 }
 
 func mask(l int) uint16 {
